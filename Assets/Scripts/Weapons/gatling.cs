@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class gatling : MonoBehaviour
+public class gatling : gun
 {
 
     public float shootInterval;
@@ -15,7 +15,7 @@ public class gatling : MonoBehaviour
     public SpriteRenderer indicator;
 
     private float shootingCooldown = 0;
-    public bool shooting = false;
+    private bool shooting = false;
     private float heat = 0;
     private Animator anim = null;
     private AudioSource sound;
@@ -53,9 +53,19 @@ public class gatling : MonoBehaviour
         {
             sound.Play();
             anim.Play("anim", 0, 0);
-            Instantiate(projectile, transform.position + projectileOrigin, Quaternion.identity);
+            Instantiate(projectile, transform.position + projectileOrigin, transform.rotation);
             shootingCooldown = shootInterval;
             heat += heatPerShot;
         }
+    }
+
+    override public void StartShooting()
+    {
+        shooting = true;
+    }
+
+    override public void StopShooting()
+    {
+        shooting = false;
     }
 }
