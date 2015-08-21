@@ -8,6 +8,16 @@ public class selfdestruct : MonoBehaviour {
     private float startTime;
 
 	void Awake () {
-        Destroy(gameObject, lifeTime);
+		StartCoroutine (Destruct ());
+	}
+
+	private IEnumerator Destruct()
+	{
+		yield return new WaitForSeconds(lifeTime);
+
+		if (transform.parent != null)
+			Destroy (transform.parent.gameObject);
+		else
+			Destroy (gameObject);
 	}
 }

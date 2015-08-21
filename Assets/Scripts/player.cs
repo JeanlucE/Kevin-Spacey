@@ -4,14 +4,18 @@ using System.Collections;
 public class player : MonoBehaviour {
 
     public gun primary;
-	
-	void Update () {
-        Vector3 rotationToCrosshair = Vector3.zero;
-        Vector2 direction = crosshair.crossHairPos - (Vector2)transform.position;
-        rotationToCrosshair.z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
-        transform.rotation = Quaternion.Euler(rotationToCrosshair);
+	public spheremath pos;
 
-        if (Input.GetButtonDown(inputconstants.primary_fire))
+	private Vector2 rawForce;
+	private Vector3 rotationTemp;
+
+	void Start()
+	{
+		transform.parent = pos.GetParent ();
+	}
+
+	void Update () {
+		if (Input.GetButtonDown(inputconstants.primary_fire))
         {
             primary.StartShooting();
         }
@@ -19,5 +23,11 @@ public class player : MonoBehaviour {
         {
             primary.StopShooting();
         }
+
+		rawForce.x = Input.GetAxisRaw ("Horizontal");
+		rawForce.y = Input.GetAxisRaw ("Vertical");
+
+		pos.AddForceRaw (rawForce);
+		transform.LookAt (Vector3.zero, crosshair.worldPos - transform.position);
 	}
 }

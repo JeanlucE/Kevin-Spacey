@@ -4,8 +4,9 @@ using System.Collections;
 public class gatling_projectile : MonoBehaviour, projectile {
 
     public float damage;
-    public Vector2 startForce;
-
+    public float startVelocity;
+	public spheremath pos;
+	
     private Rigidbody2D r;
 
     public void OnHitEffect()
@@ -18,10 +19,14 @@ public class gatling_projectile : MonoBehaviour, projectile {
         return damage;
     }
 
-	// Use this for initialization
-	void Awake () {
-        r = GetComponent<Rigidbody2D>();
-        r.AddRelativeForce(startForce);
+	void Start()
+	{
+		transform.parent = pos.GetParent ();
+	}
+
+	public void Shoot (Vector2 direction) {
+
+		pos.SetVelocity (startVelocity * direction);
 	}
 	
 	// Update is called once per frame
