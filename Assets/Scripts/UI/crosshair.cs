@@ -3,40 +3,62 @@ using System.Collections;
 
 public class crosshair : MonoBehaviour {
 
-	public static Vector3 worldPos = Vector3.zero;
+	public static Vector3 viewPortPos = Vector3.zero;
 
-	private Vector2 screenDimensions;
+	public float gamepadAimingThreshhold;
+
+	private bool gamepadMode = false;
+	private Vector2 screenCenterViewport;
 
     void Start()
     {
         Cursor.visible = false;
 
-		screenDimensions = CalculateScreenSizeInWorldCoords ();
+		screenCenterViewport = new Vector2 (0.5f, 0.5f);
+
+		viewPortPos = screenCenterViewport; // TODO: AUch wenn switch auf controller input setzen
     }
 
-	Vector2 CalculateScreenSizeInWorldCoords () {
-		Vector3 p1 = Camera.main.ViewportToWorldPoint(new Vector3(0,0,Camera.main.nearClipPlane));  
-		Vector3 p2 = Camera.main.ViewportToWorldPoint(new Vector3(1,0,Camera.main.nearClipPlane));
-		Vector3 p3 = Camera.main.ViewportToWorldPoint(new Vector3(1,1,Camera.main.nearClipPlane));
-		
-		float width = (p2 - p1).magnitude;
-		float height = (p3 - p2).magnitude;
-		
-		Vector2 dimensions = new Vector2(width,height);
-		
-		return dimensions / 2f;
-	}
-
 	void Update () {
-        Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition) * 2f - Vector3.one;
+		Vector3 worldPos;
 
-		pos.x *= screenDimensions.x;
-		pos.y *= screenDimensions.y;
-		pos.z = 1f;
+		if (Input.GetMouseButtonDown(0))
+			gamepadMode = false;
+		else if (Mathf.Abs ( Input.GetAxisRaw(inputconstants.aiming_x_axis) ) > gamepadAimingThreshhold || Mathf.Abs(Input.GetAxisRaw(inputconstants.aiming_y_axis)) > gamepadAimingThreshhold)
+			gamepadMode = true;
 
-		transform.localPosition = pos;
-        worldPos = pos;
+		if (!gamepadMode) {
 
-		worldPos = transform.position;
+			viewPortPos = Camera.main.ScreenToViewportPoint (Input.mousePosition);
+
+		} else {
+
+			Vector2 direction;
+			direction.x = Input.GetAxisRaw(inputconstants.aiming_x_axis);
+			direction.y = Input.GetAxisRaw(inputconstants.aiming_y_axis);
+
+			float directionSqrMag = direction.sqrMagnitude;
+
+			if (directionSqrMag > gamepadAimingThreshhold)
+			{
+				direction.Normalize();
+
+				direction.x /= 2f;
+				direction.y /= 2f;
+
+				direction.x += 1f;
+				direction.y += 1f;
+
+				direction.x *= Screen.width / 2f;
+				direction.y *= Screen.height / 2f;
+
+				viewPortPos = Camera.main.ScreenToViewportPoint(direction);
+			}
+		}
+
+		worldPos = Camera.main.ViewportToWorldPoint (viewPortPos);
+
+		worldPos.z = Camera.main.transform.position.z + 1f;
+		transform.position = worldPos;
 	}
 }

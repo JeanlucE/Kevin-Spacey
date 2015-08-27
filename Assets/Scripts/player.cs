@@ -4,14 +4,13 @@ using System.Collections;
 public class player : MonoBehaviour {
 
     public gun primary;
-	public spheremath pos;
 
-	private Vector2 rawForce;
-	private Vector3 rotationTemp;
+	private Vector3 rotationTemp = Vector3.zero;
+	private static Rigidbody2D r = null;
 
-	void Start()
+	void Awake()
 	{
-		transform.parent = pos.GetParent ();
+		r = GetComponent<Rigidbody2D> ();
 	}
 
 	void Update () {
@@ -24,10 +23,16 @@ public class player : MonoBehaviour {
             primary.StopShooting();
         }
 
-		rawForce.x = Input.GetAxisRaw ("Horizontal");
-		rawForce.y = Input.GetAxisRaw ("Vertical");
+		Vector2 viewPortPosStretched = (Vector2)crosshair.viewPortPos * 2f - Vector2.one;
+		viewPortPosStretched.x *= Screen.width;
+		viewPortPosStretched.y *= Screen.height;
 
-		pos.AddForceRaw (rawForce);
-		transform.LookAt (Vector3.zero, crosshair.worldPos - transform.position);
+		rotationTemp.z = Mathf.Atan2 (viewPortPosStretched.y, viewPortPosStretched.x) * Mathf.Rad2Deg - 90f;
+		transform.rotation = Quaternion.Euler(rotationTemp);
+	}
+
+	public static Vector2 GetVelocity()
+	{
+		return r.velocity;
 	}
 }

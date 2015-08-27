@@ -5,32 +5,23 @@ public class gatling_projectile : MonoBehaviour, projectile {
 
     public float damage;
     public float startVelocity;
-	public spheremath pos;
 	
     private Rigidbody2D r;
+
+	void Start()
+	{
+		r = GetComponent<Rigidbody2D> ();
+
+		r.AddForce ((Vector2)transform.up * startVelocity + player.GetVelocity(), ForceMode2D.Impulse);
+	}
 
     public void OnHitEffect()
     {
         // Fancy shit
     }
 
-    public float? GetDamage()
+    public float GetDamage()
     {
         return damage;
     }
-
-	void Start()
-	{
-		transform.parent = pos.GetParent ();
-	}
-
-	public void Shoot (Vector2 direction) {
-
-		pos.SetVelocity (startVelocity * direction);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

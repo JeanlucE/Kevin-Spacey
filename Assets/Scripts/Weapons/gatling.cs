@@ -54,7 +54,6 @@ public class gatling : gun
             sound.Play();
             anim.Play("anim", 0, 0);
             GameObject p = (GameObject) Instantiate(projectile, transform.position + projectileOrigin.x * transform.up + projectileOrigin.y * transform.right, transform.rotation);
-			p.GetComponent<gatling_projectile>().Shoot(transform.up);
             shootingCooldown = shootInterval;
             heat += heatPerShot;
         }
